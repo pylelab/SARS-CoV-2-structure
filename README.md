@@ -1,1 +1,1 @@
-# SARS-CoV-2-structure
+# SARS-CoV-2_global_local_structure
