@@ -1,5 +1,5 @@
 ---
-title: "Relative Structured-ness Framework"
+title: "Relative BPC Framework"
 output: html_notebook
 ---
 
@@ -12,16 +12,17 @@ library(readxl)
 library(dplyr)
 library(ggplot2)
 ```
-
+#read input file with BPC content data, some formatting tweaks for Excel file
 ```{r}
 median_structuredness_criterion <- read_excel("N_sgRNA_structured_ness_shannon_template.xlsx")
-working <- median_structuredness_criterion %>% rename(`Structuredness` = `Structured-ness (51-nt)`) %>% rename(`Structuredness gmedian` = `gmedian...3`) %>% rename(`Shannon gmedian` = `gmedian...6`)
+working <- median_structuredness_criterion %>% rename(`BPC` = `Structured-ness (51-nt)`) %>% 
+rename(`BPC gmedian` = `gmedian...3`) %>% rename(`Shannon gmedian` = `gmedian...6`)
 ```
 
 ```{r}
-rel_bpc <- numeric(length(working$Structuredness))
-for (i in 1:length(working$Structuredness)) {
-  rel_bpc[i] <- length(which(working$Structuredness < working$Structuredness[i])) / length(working$Structuredness)
+rel_bpc <- numeric(length(working$BPC))
+for (i in 1:length(working$BPC)) {
+  rel_bpc[i] <- length(which(working$Structuredness < working$BPC[i])) / length(working$BPC)
 }
 
 rel_shannon <- numeric(length(working$shannon_movmedian_51))
@@ -29,7 +30,8 @@ for (i in 1:length(working$shannon_movmedian_51)) {
   rel_shannon[i] <- length(which(working$shannon_movmedian_51 < working$shannon_movmedian_51[i])) / length(working$shannon_movmedian_51)
 }
 ```
-
+#build list of nucleotides with BPC (and Shannon Entropy) values equal to true median value
+#median values hardcoded to have the BPCrel value of 0.5.
 ```{r}
 meds_bpc <- working %>% filter(Structuredness > median(working$Structuredness) - 0.000000001) %>% filter(Structuredness < median(working$Structuredness) + 0.00000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
 meds_shannon <- working %>% filter(shannon_movmedian_51 > median(working$shannon_movmedian_51) - 0.000000001) %>% filter(shannon_movmedian_51 < median(working$shannon_movmedian_51) + 0.000000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
@@ -48,7 +50,7 @@ bin_shannon[which(rel_shannon < 0.50)] <- 1
 identical(working$`Above gmedian`, bin_bpc)
 identical(working$`Below 0`, bin_shannon)
 ```
-
+#test plots for subset of BPCrel data
 ```{r}
 relativebpc_bound <- as.data.frame(cbind(working$Nt, rel_bpc, bin_bpc))
 relativebpc_bound <- relativebpc_bound %>% rename(`Nt` = `V1`)
