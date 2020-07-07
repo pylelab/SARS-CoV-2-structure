@@ -16,7 +16,7 @@ library(ggplot2)
 ```{r}
 median_structuredness_criterion <- read_excel("N_sgRNA_structured_ness_shannon_template.xlsx")
 working <- median_structuredness_criterion %>% rename(`BPC` = `Structured-ness (51-nt)`) %>% 
-rename(`BPC gmedian` = `gmedian...3`) %>% rename(`Shannon gmedian` = `gmedian...6`)
+  rename(`BPC gmedian` = `gmedian...3`) %>% rename(`Shannon gmedian` = `gmedian...6`)
 ```
 
 ```{r}
@@ -33,8 +33,10 @@ for (i in 1:length(working$shannon_movmedian_51)) {
 #build list of nucleotides with BPC (and Shannon Entropy) values equal to true median value
 #median values hardcoded to have the BPCrel value of 0.5.
 ```{r}
-meds_bpc <- working %>% filter(Structuredness > median(working$Structuredness) - 0.000000001) %>% filter(Structuredness < median(working$Structuredness) + 0.00000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
-meds_shannon <- working %>% filter(shannon_movmedian_51 > median(working$shannon_movmedian_51) - 0.000000001) %>% filter(shannon_movmedian_51 < median(working$shannon_movmedian_51) + 0.000000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
+meds_bpc <- working %>% filter(Structuredness > median(working$Structuredness) - 0.000000001) %>% 
+  filter(Structuredness < median(working$Structuredness) + 0.00000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
+meds_shannon <- working %>% filter(shannon_movmedian_51 > median(working$shannon_movmedian_51) - 0.000000001) %>% 
+  filter(shannon_movmedian_51 < median(working$shannon_movmedian_51) + 0.000000001) %>% select(Nt) #%>% filter(`Above gmedian` == 1)
 
 rel_bpc[meds_bpc$Nt] <- 0.5
 rel_shannon[meds_shannon$Nt] <- 0.5
@@ -61,7 +63,8 @@ relativebpcshannon_bound_firstten <- relativebpcshannon_bound %>% filter(Nt < 10
 working_firstten <- working %>% filter(Nt < 10000)
   
 ggplot(data=working_firstten, aes(x=working_firstten$Nt, y=working_firstten$Structuredness, group=1)) + geom_line()
-ggplot(data=relativebpcshannon_bound_firstten, aes(x=relativebpcshannon_bound_firstten$Nt, y=relativebpcshannon_bound_firstten$rel_bpc, group=1)) + geom_line()
+ggplot(data=relativebpcshannon_bound_firstten, aes(x=relativebpcshannon_bound_firstten$Nt, 
+  y=relativebpcshannon_bound_firstten$rel_bpc, group=1)) + geom_line()
 
 #write.csv(relativebpc_bound, file = "rel_bpcshannon_n-sgRNA.csv", row.names = FALSE)
 ```
